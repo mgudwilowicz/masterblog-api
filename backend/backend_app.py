@@ -12,6 +12,7 @@ POSTS = [
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def get_posts():
+    global POSTS
     if request.method == "POST":
         id = max(post['id'] for post in POSTS) + 1
         data = request.get_json()
@@ -22,6 +23,19 @@ def get_posts():
 
         POSTS.append(new_post)
         return jsonify(new_post), 201
+
+    sort = request.args.get('sort')
+    direction = request.args.get('direction', 'asc')
+    print(direction)
+    reverse = False
+    if direction == 'desc':
+        reverse = True
+
+    if (sort == 'title' or sort == 'content') and (direction == 'asc' or direction == 'desc'):
+        POSTS = sorted(POSTS, key=lambda post: post[sort], reverse=reverse)
+    else:
+        return  jsonify({'message': 'invalid query for sort or direction'}), 404
+
 
     return jsonify(POSTS)
 
