@@ -25,19 +25,21 @@ def get_posts():
         return jsonify(new_post), 201
 
     sort = request.args.get('sort')
+    if sort is None:
+        return jsonify(POSTS)
+
     direction = request.args.get('direction', 'asc')
-    print(direction)
     reverse = False
     if direction == 'desc':
         reverse = True
 
     if (sort == 'title' or sort == 'content') and (direction == 'asc' or direction == 'desc'):
-        POSTS = sorted(POSTS, key=lambda post: post[sort], reverse=reverse)
+        return sorted(POSTS, key=lambda post: post[sort], reverse=reverse)
     else:
         return  jsonify({'message': 'invalid query for sort or direction'}), 404
 
 
-    return jsonify(POSTS)
+
 
 
 @app.route('/api/posts/<int:id>', methods=['DELETE'])
