@@ -25,10 +25,30 @@ def get_posts():
 
     return jsonify(POSTS)
 
+
+@app.route('/api/posts/<int:id>', methods=['DELETE'])
+def delete(id):
+    global POSTS
+    post = find_post_by_id(id)
+    if post is None:
+        return jsonify({"message": f"Post with id {id} not found"}), 404
+
+    POSTS.remove(post)
+    return jsonify({"message": f"Post with id {id} has been deleted successfully."}), 200
+
+
+
 def validate_post_data(post):
     if post['title'] == '' or post['content'] == '':
         return False
     return True
+
+
+def find_post_by_id(id):
+    for post in POSTS:
+        if post['id'] == id:
+            return post
+    return None
 
 
 if __name__ == '__main__':
