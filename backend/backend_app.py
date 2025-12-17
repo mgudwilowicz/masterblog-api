@@ -48,6 +48,23 @@ def update(id):
     return jsonify(post), 200
 
 
+@app.route('/api/posts/search', methods=['GET'])
+def search():
+    title = request.args.get('title')
+    content = request.args.get('content')
+
+    results = []
+
+    for post in POSTS:
+        if title and title.lower() not in post['title'].lower():
+            continue
+        if content and content.lower() not in post['content'].lower():
+            continue
+        results.append(post)
+
+    return jsonify(results),200
+
+
 def validate_post_data(post):
     if post['title'] == '' or post['content'] == '':
         return False
