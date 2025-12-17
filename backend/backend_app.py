@@ -28,7 +28,6 @@ def get_posts():
 
 @app.route('/api/posts/<int:id>', methods=['DELETE'])
 def delete(id):
-    global POSTS
     post = find_post_by_id(id)
     if post is None:
         return jsonify({"message": f"Post with id {id} not found"}), 404
@@ -36,6 +35,17 @@ def delete(id):
     POSTS.remove(post)
     return jsonify({"message": f"Post with id {id} has been deleted successfully."}), 200
 
+
+@app.route('/api/posts/<int:id>', methods=['PUT'])
+def update(id):
+    post = find_post_by_id(id)
+    if post is None:
+        return jsonify({"message": f"Post with id {id} not found"}), 404
+
+    data = request.get_json()
+    post.update(data)
+
+    return jsonify(post), 200
 
 
 def validate_post_data(post):
