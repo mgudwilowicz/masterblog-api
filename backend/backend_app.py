@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # This will enable CORS for all routes
+CORS(app)  # Enable CORS for all routes
 
 POSTS = [
     {"id": 1, "title": "First post", "content": "This is the first post."},
@@ -12,7 +12,7 @@ POSTS = [
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def get_posts():
-    global POSTS
+    """Get all posts or add a new post."""
     if request.method == "POST":
         id = max(post['id'] for post in POSTS) + 1
         data = request.get_json()
@@ -44,6 +44,7 @@ def get_posts():
 
 @app.route('/api/posts/<int:id>', methods=['DELETE'])
 def delete(id):
+    """Delete a post by ID."""
     post = find_post_by_id(id)
     if post is None:
         return jsonify({"message": f"Post with id {id} not found"}), 404
@@ -54,21 +55,21 @@ def delete(id):
 
 @app.route('/api/posts/<int:id>', methods=['PUT'])
 def update(id):
+    """Update a post by ID."""
     post = find_post_by_id(id)
     if post is None:
         return jsonify({"message": f"Post with id {id} not found"}), 404
 
     data = request.get_json()
     post.update(data)
-
     return jsonify(post), 200
 
 
 @app.route('/api/posts/search', methods=['GET'])
 def search():
+    """Search posts by title and/or content."""
     title = request.args.get('title')
     content = request.args.get('content')
-
     results = []
 
     for post in POSTS:
@@ -78,18 +79,20 @@ def search():
             continue
         results.append(post)
 
-    return jsonify(results),200
+    return jsonify(results), 200
 
 
 def validate_post_data(post):
+    """Check if a post has a title and content."""
     if post['title'] == '' or post['content'] == '':
         return False
     return True
 
 
-def find_post_by_id(id):
+def find_post_by_id(post_id):
+    """Return a post by ID or None if not found."""
     for post in POSTS:
-        if post['id'] == id:
+        if post['id'] == post_id:
             return post
     return None
 
